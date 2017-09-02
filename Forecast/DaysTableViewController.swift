@@ -11,26 +11,30 @@ import CoreLocation
 
 class DaysTableViewController: UITableViewController {
 
+    //Object that keeps the days
     fileprivate let dBaseManager = DaysManager()
-    private let locationManager = CLLocationManager()
     
-    private var selectGrill = false
+    private let locationManager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //TableView Setup
         self.clearsSelectionOnViewWillAppear = true
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        //Also include refresh controls
+        refreshControl = UIRefreshControl()
+        refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
         
+        //LocationManager Setup
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         
-        refreshControl = UIRefreshControl()
-        refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        //Register self as a delegate in order to update views when needed
         dBaseManager.setForecastDelegate(delegate: self)
     }
 
@@ -53,7 +57,7 @@ class DaysTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: DayTableViewCell.reuseIdentifier, for: indexPath) as! DayTableViewCell
 
         let day = dBaseManager.getDaysArray()[indexPath.item]
-        // Configure the cell...
+        // Configure the cell
         cell.setupWithDay(day: day)
         
         return cell
@@ -61,6 +65,7 @@ class DaysTableViewController: UITableViewController {
     
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //Cell clicked, go to detailed description
         performSegue(withIdentifier: "DayForecastSegue", sender: dBaseManager.getDaysArray()[indexPath.item])
     }
 
@@ -69,8 +74,7 @@ class DaysTableViewController: UITableViewController {
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        // Get the new view controller and set it's day
         if let dvc = segue.destination as? DetailViewController {
             
             dvc.setForecastedDay(forecastedDay:sender as! Day)
@@ -78,15 +82,23 @@ class DaysTableViewController: UITableViewController {
         }
     }
     
+    //MARK: Grill handling
     @IBAction func grillButtonPressed(_ sender: UIBarButtonItem) {
         if sender.title == "Forecast"{
             sender.title = "Grill?"
+            
+            //We want to go back to the normal Forecast list
             dBaseManager.toggleGrill(on: false)
+            
+            //Reset tavlewView Footer
             tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
             tableView.reloadData()
         }else{
             sender.title = "Forecast"
+            //Want to go to the Grill list
             dBaseManager.toggleGrill(on: true)
+            
+            //If there are no good grill days, set the funny label
             if dBaseManager.getDaysArray().count == 0 {
                 tableView.tableFooterView = noGrillLabel()
             }
@@ -94,40 +106,51 @@ class DaysTableViewController: UITableViewController {
         }
     }
     
+    //Funny label setup
     fileprivate func noGrillLabel() -> UILabel {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 80))
         label.textAlignment = .center
         
         label.text = "No grill soon guyzz :("
         
+        //Check if there are no forecasts in list because the API didn't yet respond
         if !dBaseManager.checkExistingForecast() {
             label.text = "Forecasts not yet available!"
         }
         return label
     }
     
+    //MARK: RefreshControl function
     func refresh(){
         dBaseManager.updateForecasts()
     }
-    
-
 }
 
 //MARK: ForecastUpdateDelegate
 extension DaysTableViewController: ForecastUpdateDelegate {
     
+    //Called when a new forecast was recieved
     func didUpdateForecast() {
         refreshControl?.endRefreshing()
         tableView.reloadData()
         
+        //If grill mode was on and the API response only now comes, update label accordingly
         if ((tableView.tableFooterView as? UILabel) != nil) {
-            tableView.tableFooterView = noGrillLabel()
+            //If there are still no days update the label
+            if dBaseManager.getDaysArray().count == 0 {
+                tableView.tableFooterView = noGrillLabel()
+            }else {
+                //Else fill the footer with the dummy view
+                tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            }
+            
         }
     }
 }
 
 extension DaysTableViewController: CLLocationManagerDelegate {
     
+    //Start updating location when permission is given
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         if status == .authorizedWhenInUse {
             print("app authorized!")
@@ -139,12 +162,13 @@ extension DaysTableViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        //Check if location exists
         if locations.last == nil {
             handleFailLocation()
             print("invalid location array")
             return
         }
-        
+        //Get City and Country from location
         CLGeocoder().reverseGeocodeLocation(locations.last!, completionHandler: {(placemarks, error)->Void in
             
             if (error != nil) {
@@ -159,13 +183,16 @@ extension DaysTableViewController: CLLocationManagerDelegate {
             }
             
             if placemarks!.count > 0 {
+                //Managed to find the placemark, stop updating location
                 manager.stopUpdatingLocation()
                 let place = placemarks![0] as CLPlacemark
                 
                 if let locality = place.locality {
+                    //Update City
                     Location.setTown(town: locality)
                 }
                 if let country = place.country {
+                    //Update Country
                     Location.setCountry(country: country)
                 }
                 
@@ -182,6 +209,7 @@ extension DaysTableViewController: CLLocationManagerDelegate {
         print(error)
     }
     
+    //Get weather with default values if location fails
     private func handleFailLocation(){
         if dBaseManager.checkExistingForecast()  {
             dBaseManager.updateForecasts()

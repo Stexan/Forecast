@@ -28,13 +28,17 @@ class DayTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
     public func setupWithDay(day:Day){
+        //Setup labels
         self.dayNameLabel.text = day.getDayName()
         self.dayDateLabel.text = day.getDayDate()
         
+        //If forcast is available, get a relevant hour (found in the middle of those available)
         if var relevantForecast = day.daysForecast?.detailedForecastArray.count{
             relevantForecast = relevantForecast / 2
             
+            //Update the icon of the cell
             if let forecast = day.daysForecast?.detailedForecastArray[relevantForecast] {
                 self.iconImageView?.image = forecast.getDescriptionImage()
             }else{

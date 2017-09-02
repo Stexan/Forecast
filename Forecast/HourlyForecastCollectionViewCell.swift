@@ -20,6 +20,7 @@ class HourlyForecastCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var maximumLabel: UILabel!
     @IBOutlet weak var minimumLabel: UILabel!
     
+    //Setup cell
     public func setup(with hForecast:Forecast?) {
         if let unwrappedForecast = hForecast {
             hourLabel.text = unwrappedForecast.hour
@@ -34,7 +35,9 @@ class HourlyForecastCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    //Hide all labels and the image view
     private func toggleHidden(on:Bool){
         wrapperView.isHidden = on
+        imageView.isHidden = on
     }
 }

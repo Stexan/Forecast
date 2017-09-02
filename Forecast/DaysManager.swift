@@ -13,15 +13,20 @@ protocol ForecastUpdateDelegate {
 }
 
 class DaysManager: NSObject {
-
+    
+    //Default Number of days from plist
     static private let plistPath:String = Bundle.main.path(forResource: "Constants", ofType: "plist")!
     static private let plistNumberString: String = "DaysToForecast"
     
+    //All the days to be forecasted
     fileprivate var daysArray = Array<Day>()
-    fileprivate var grillDaysArray = Array<Day>()
     
+    //API Calls handler
     private let requestHandler = APIHandler()
+    //Delegate which should update views when forecast is recieved
     fileprivate var forecastDelegate:ForecastUpdateDelegate?
+    
+    //Should return grill days
     private var grillDays:Bool = false
     
     //MARK: Initializers
@@ -50,7 +55,9 @@ class DaysManager: NSObject {
         super.init()
         requestHandler.delegate = self
     }
+    //MARK: Getters And Setters
     
+    //Get Days
     public func getDaysArray() ->Array<Day> {
         if grillDays {
             return daysArray.filter {$0.daysForecast != nil && $0.daysForecast!.forecastGrillWeather()}
@@ -58,18 +65,21 @@ class DaysManager: NSObject {
         return daysArray
     }
     
-    public func toggleGrill(on:Bool){
-        grillDays = on
-    }
-    
+    //Set Forecast Delegate
     public func setForecastDelegate(delegate newDel:ForecastUpdateDelegate){
         forecastDelegate = newDel
     }
     
+    public func toggleGrill(on:Bool){
+        grillDays = on
+    }
+    
+    //Make update request to API
     public func updateForecasts(){
         requestHandler.getWeather(town: Location.getTown(), country: Location.getCountry())
     }
     
+    //Check if the API returned any forecast yet
     public func checkExistingForecast() -> Bool {
         if (self.daysArray.first != nil) {
             return self.daysArray.first!.checkExistingForecast()
@@ -81,16 +91,22 @@ class DaysManager: NSObject {
 extension DaysManager: APIDelegate {
     
     //MARK: APIDelegate
+    //Success response function
     func handlerDidGetResults(results:Array<AnyObject>?){
-        forecastDelegate?.didUpdateForecast()
+        //Update days forecasts
         if let unwrappedResults = (results as? Array<ForecastWrapper>){
             for i in 0..<daysArray.count {
+                if i > unwrappedResults.count {
+                    return
+                }
                 daysArray[i].updateForecast(new: unwrappedResults[i])
             }
+            //Notify delegate of the changes
             forecastDelegate?.didUpdateForecast()
         }
     }
     
+    //Error function, present error in alert
     func handlerDidFailWithError(error:NSError?,description:String?){
         let alert = UIAlertController(title: "Error", message: description, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))

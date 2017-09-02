@@ -43,7 +43,7 @@ class Forecast: NSObject {
     private let overview:ForecastOverview
     
     override var description: String {
-       return weatherDescription
+       return weatherDescription.capitalized
     }
     
     //Initialize the Forecast by unwrapping all the needed items from the dict

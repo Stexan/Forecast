@@ -10,6 +10,7 @@ import UIKit
 
 class DetailViewController: UIViewController {
 
+    @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var activityWrapperView: UIView!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -20,6 +21,7 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        locationLabel.text = Location.getTown() + ", " + Location.getCountry()
         
     }
     override func viewWillAppear(_ animated: Bool) {

@@ -23,7 +23,7 @@ class HourlyForecastCollectionViewCell: UICollectionViewCell {
     //Setup cell
     public func setup(with hForecast:Forecast?) {
         if let unwrappedForecast = hForecast {
-            hourLabel.text = unwrappedForecast.hour
+            hourLabel.text = "At " + unwrappedForecast.hour
             descriptionLabel.text = unwrappedForecast.description
             temperatureLabel.text = String(unwrappedForecast.temperature) + " °C"
             maximumLabel.text = String(unwrappedForecast.tempMin) + " °C"

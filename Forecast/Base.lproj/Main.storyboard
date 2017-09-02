@@ -23,7 +23,7 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="60"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="O2b-S3-KUk" id="Kw5-QF-Hg2">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="59.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jY9-Ma-NzC">
@@ -243,6 +243,15 @@
                                     <outlet property="delegate" destination="laB-5C-ZCu" id="iVh-2o-1am"/>
                                 </connections>
                             </collectionView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4ko-6Y-AqP">
+                                <rect key="frame" x="24" y="72" width="327" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="pTI-pg-Y7H"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K0y-Sm-Lot">
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <subviews>
@@ -265,14 +274,18 @@
                             <constraint firstItem="eZs-hQ-6gV" firstAttribute="top" secondItem="ovG-2O-R3J" secondAttribute="bottom" id="Mg9-r6-Jsv"/>
                             <constraint firstItem="ovG-2O-R3J" firstAttribute="leading" secondItem="1o0-of-vvc" secondAttribute="leading" id="QvI-Bf-ooS"/>
                             <constraint firstItem="eZs-hQ-6gV" firstAttribute="top" secondItem="K0y-Sm-Lot" secondAttribute="bottom" id="WHn-h5-eM5"/>
+                            <constraint firstItem="4ko-6Y-AqP" firstAttribute="leading" secondItem="1o0-of-vvc" secondAttribute="leadingMargin" constant="8" id="Wip-t4-Okl"/>
                             <constraint firstItem="K0y-Sm-Lot" firstAttribute="leading" secondItem="1o0-of-vvc" secondAttribute="leading" id="hro-L0-3OX"/>
                             <constraint firstItem="ovG-2O-R3J" firstAttribute="top" secondItem="zlP-5G-jrw" secondAttribute="bottom" id="iRA-21-GVX"/>
+                            <constraint firstItem="4ko-6Y-AqP" firstAttribute="top" secondItem="zlP-5G-jrw" secondAttribute="bottom" constant="8" id="ruL-cm-uJS"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="4ko-6Y-AqP" secondAttribute="trailing" constant="8" id="u9C-s7-yuf"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="JtZ-VQ-gYY" id="qdd-gM-h18"/>
                         <outlet property="activityWrapperView" destination="K0y-Sm-Lot" id="8P8-iw-Ydv"/>
                         <outlet property="collectionView" destination="ovG-2O-R3J" id="nus-7F-8Em"/>
+                        <outlet property="locationLabel" destination="4ko-6Y-AqP" id="vwj-dX-9pA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jBn-Ge-OGy" userLabel="First Responder" sceneMemberID="firstResponder"/>

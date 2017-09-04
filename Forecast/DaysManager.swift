@@ -96,10 +96,12 @@ extension DaysManager: APIDelegate {
         //Update days forecasts
         if let unwrappedResults = (results as? Array<ForecastWrapper>){
             for i in 0..<daysArray.count {
-                if i > unwrappedResults.count {
-                    return
+                if i < unwrappedResults.count {
+                    daysArray[i].updateForecast(new: unwrappedResults[i])
+                }else{
+                    print("Unexpectedly found more days than forecasts returned by the API!")
                 }
-                daysArray[i].updateForecast(new: unwrappedResults[i])
+                
             }
             //Notify delegate of the changes
             forecastDelegate?.didUpdateForecast()
